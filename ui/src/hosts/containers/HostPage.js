@@ -64,24 +64,28 @@ export const HostPage = React.createClass({
     const {timeRange} = this.state;
     const {source} = this.props;
 
-    let layoutCells = [];
-    layouts.forEach((layout) => {
-      layoutCells = layoutCells.concat(layout.cells);
-    });
+    const allCells = layouts.reduce((all, layout) => {
+      return all.concat(layout.cells);
+    }, []);
 
-    layoutCells.forEach((cell, i) => {
-      cell.queries.forEach((q) => {
-        q.text = q.query;
-        q.database = source.telegraf;
+    const adjustedCells = allCells.map((cell, i) => {
+      const cellQueries = cell.queries.map((q) => {
+        return Object.assign({}, q, {
+          text: q.query,
+          database: source.telegraf,
+        });
       });
-      cell.x = (i * 4 % 12); // eslint-disable-line no-magic-numbers
-      cell.y = 0;
+      return Object.assign({}, cell, {
+        queries: cellQueries,
+        x: (i * 4 % 12), // eslint-disable-line no-magic-numbers
+        y: 0,
+      });
     });
 
     return (
       <LayoutRenderer
         timeRange={timeRange}
-        cells={layoutCells}
+        cells={adjustedCells}
         autoRefreshMs={autoRefreshMs}
         source={source.links.proxy}
         host={this.props.params.hostID}
