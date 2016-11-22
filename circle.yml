@@ -20,7 +20,7 @@ test:
 
 deployment:
   master:
-    branch: master
+    branch: ross-build-updates
     commands:
       - make docker
       - docker login -e $QUAY_EMAIL -u "$QUAY_USER" -p $QUAY_PASS quay.io
